@@ -7,8 +7,9 @@
   background-color: #1890ff;
 }
 
-.tile > div {
+.tile-inner {
   border-radius: 8px;
+  background: #1890ff;
 }
 
 body {
