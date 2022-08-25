@@ -1,49 +1,87 @@
 import React, { useRef, useLayoutEffect, useState } from "react";
 import { Col, Row } from "antd";
+import { stages, boardWidth, totalSpan } from "./assets/stage";
+
+const gutter = 8;
 
 export const Board = () => {
   const tileRef = useRef();
 
-  const [width, setWidth] = useState(0);
+  // const [width, setWidth] = useState(0);
+  const [timer, setTimer] = useState(20);
   const [height, setHeight] = useState(0);
+  const [marginTop, setMarginTop] = useState(0);
+
+  const [stage, setStage] = useState(stages[0]);
+
+  const doNextStage = () => {
+    setStage(stages[stage.level]);
+  };
+
+  const doClick = (i) => {
+    if (i === stage.answerKey) {
+      doNextStage();
+      // alert("success");
+    } else {
+      console.log(i);
+    }
+  };
+
+  const drawTile = (stage, tileRef, height, marginTop) => {
+    let t = [];
+    for (let i = 0; i < stage.tileNumber * stage.tileNumber; i++) {
+      t.push(
+        <Col
+          key={i}
+          className="tile"
+          ref={tileRef}
+          span={totalSpan / stage.tileNumber}
+          onClick={() => doClick(i)}
+        >
+          <div
+            className="tile-inner"
+            style={{
+              marginTop: `${marginTop}px`,
+              height: `${height}px`,
+              backgroundColor:
+                stage.answerKey === i ? stage.answerColor : stage.normalColor,
+            }}
+          ></div>
+        </Col>
+      );
+    }
+    return t;
+  };
+
   useLayoutEffect(() => {
-    const tileWidth = tileRef.current.offsetWidth;
-    console.log(tileRef.current.offsetWidth);
+    const tileWidth = tileRef.current.offsetWidth - gutter;
     setHeight(tileWidth);
-  }, []);
+
+    const marginTop = boardWidth - tileWidth * stage.tileNumber;
+    setMarginTop(marginTop / (stage.tileNumber - 1));
+
+    // setInterval(() => {
+    //   setTimer(timer - 1);
+    // }, 1000);
+  }, [stage]);
   // life 목숨 3개
 
   //
   return (
     <div className="flex justify-center flex-col">
-      <h1 className="text-3xl text-center text-white pt-16">Level 1</h1>
+      <h1 className="text-3xl text-center text-white pt-16">
+        Level {stage.level}
+      </h1>
+      <div className="text-2xl text-center text-orange-300 pt-4">{timer}</div>
       <div
-        className="board-wrap text-center pt-8 text-center"
+        className="board-wrap text-center pt-4 text-center"
         style={{
-          minWidth: 480,
-          minHeight: 480,
+          minWidth: boardWidth,
+          minHeight: boardWidth,
           margin: "0 auto",
         }}
       >
-        <Row gutter={8}>
-          <Col
-            className="tile"
-            ref={tileRef}
-            span={12}
-            onClick={() => alert(1)}
-          >
-            <div className="tile-inner" style={{ height: `${height}px` }}></div>
-          </Col>
-          <Col className="tile" span={12}>
-            <div className="tile-inner" style={{ height: `${height}px` }}></div>
-          </Col>
-          <Col className="tile mt-2" span={12}>
-            <div className="tile-inner" style={{ height: `${height}px` }}></div>
-          </Col>
-          <Col className="tile mt-2" span={12}>
-            <div className="tile-inner" style={{ height: `${height}px` }}></div>
-          </Col>
-        </Row>
+        <Row gutter={gutter}>{drawTile(stage, tileRef, height, marginTop)}</Row>
       </div>
     </div>
   );
