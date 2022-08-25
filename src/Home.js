@@ -5,8 +5,10 @@ import { Button } from "antd";
 export const Home = () => {
   return (
     <div className="flex justify-center flex-col">
-      <h1 className="text-3xl text-center pt-16">색상 구분 테스트</h1>
-      <p className="text-center mb-2">당신의 미적감각은 어느정도인가요?</p>
+      <h1 className="text-3xl text-center text-white pt-16">
+        색상 구분 테스트
+      </h1>
+      <p className="text-center pt-4 mb-2">당신의 미적감각은 어느정도인가요?</p>
       {/*
       <AdSense.Google
         style={{ display: "block" }}

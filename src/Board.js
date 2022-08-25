@@ -1,21 +1,38 @@
 import React, { useRef, useLayoutEffect, useState } from "react";
 import { Col, Row } from "antd";
-import { stages, boardWidth, totalSpan } from "./assets/stage";
+import {
+  stages,
+  boardWidth,
+  totalSpan,
+  getRandomNumber,
+  easyColor,
+  mediumColor,
+  hardColor,
+  crazyColor,
+} from "./assets/stage";
 
 const gutter = 8;
+const timerTime = 15;
 
 export const Board = () => {
   const tileRef = useRef();
+  let refTimer = useRef(timerTime);
 
-  // const [width, setWidth] = useState(0);
-  const [timer, setTimer] = useState(20);
+  const [timer, setTimer] = useState(timerTime);
   const [height, setHeight] = useState(0);
   const [marginTop, setMarginTop] = useState(0);
+  const [tileColorRandomNumber, setTileColorRandomNumber] = useState(
+    getRandomNumber(9)
+  );
 
   const [stage, setStage] = useState(stages[0]);
 
   const doNextStage = () => {
+    console.log("next Stage");
+    setTimer(timerTime);
+    refTimer.current = timerTime;
     setStage(stages[stage.level]);
+    setTileColorRandomNumber(getRandomNumber(9));
   };
 
   const doClick = (i) => {
@@ -28,7 +45,17 @@ export const Board = () => {
   };
 
   const drawTile = (stage, tileRef, height, marginTop) => {
-    let t = [];
+    const t = [];
+    let tileColor = [];
+    if (stage.name === "easy") {
+      tileColor = easyColor[tileColorRandomNumber];
+    } else if (stage.name === "medium") {
+      tileColor = mediumColor[tileColorRandomNumber];
+    } else if (stage.name === "hard") {
+      tileColor = hardColor[tileColorRandomNumber];
+    } else if (stage.name === "crazy") {
+      tileColor = crazyColor[tileColorRandomNumber];
+    }
     for (let i = 0; i < stage.tileNumber * stage.tileNumber; i++) {
       t.push(
         <Col
@@ -44,7 +71,9 @@ export const Board = () => {
               marginTop: `${marginTop}px`,
               height: `${height}px`,
               backgroundColor:
-                stage.answerKey === i ? stage.answerColor : stage.normalColor,
+                stage.answerKey === i
+                  ? tileColor.answerColor
+                  : tileColor.normalColor,
             }}
           ></div>
         </Col>
@@ -58,11 +87,20 @@ export const Board = () => {
     setHeight(tileWidth);
 
     const marginTop = boardWidth - tileWidth * stage.tileNumber;
+    console.log(boardWidth);
+    console.log(tileWidth);
+    console.log(stage.tileNumber);
     setMarginTop(marginTop / (stage.tileNumber - 1));
 
-    // setInterval(() => {
-    //   setTimer(timer - 1);
-    // }, 1000);
+    const interval = setInterval(() => {
+      if (refTimer.current === 0) {
+        clearInterval(interval);
+      } else {
+        setTimer((refTimer.current -= 1));
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [stage]);
   // life 목숨 3개
 
