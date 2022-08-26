@@ -1,5 +1,6 @@
 import React, { useRef, useLayoutEffect, useState } from "react";
 import { Col, Row } from "antd";
+import { useNavigate } from "react-router-dom";
 import {
   stages,
   boardWidth,
@@ -15,6 +16,7 @@ const gutter = 8;
 const timerTime = 15;
 
 export const Board = () => {
+  const navigate = useNavigate();
   const tileRef = useRef();
   let refTimer = useRef(timerTime);
 
@@ -29,18 +31,23 @@ export const Board = () => {
 
   const doNextStage = () => {
     console.log("next Stage");
-    setTimer(timerTime);
-    refTimer.current = timerTime;
-    setStage(stages[stage.level]);
-    setTileColorRandomNumber(getRandomNumber(9));
+    if (stage.level === 60) {
+      navigate("/result", { state: { level: stage.level } });
+    } else {
+      setTimer(timerTime);
+      refTimer.current = timerTime;
+      setStage(stages[stage.level]);
+      setTileColorRandomNumber(getRandomNumber(9));
+    }
   };
 
   const doClick = (i) => {
-    if (i === stage.answerKey) {
+    if (refTimer.current <= 0) {
+      navigate("/result", { state: { level: stage.level } });
+    } else if (i === stage.answerKey) {
       doNextStage();
-      // alert("success");
     } else {
-      console.log(i);
+      setTimer((refTimer.current -= 2));
     }
   };
 
@@ -87,13 +94,11 @@ export const Board = () => {
     setHeight(tileWidth);
 
     const marginTop = boardWidth - tileWidth * stage.tileNumber;
-    console.log(boardWidth);
-    console.log(tileWidth);
-    console.log(stage.tileNumber);
     setMarginTop(marginTop / (stage.tileNumber - 1));
 
     const interval = setInterval(() => {
-      if (refTimer.current === 0) {
+      if (refTimer.current <= 0) {
+        navigate("/result", { state: { level: stage.level } });
         clearInterval(interval);
       } else {
         setTimer((refTimer.current -= 1));
@@ -101,15 +106,13 @@ export const Board = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [stage]);
+  }, [stage, navigate]);
   // life 목숨 3개
 
   //
   return (
     <div className="flex justify-center flex-col">
-      <h1 className="text-3xl text-center text-white pt-16">
-        Level {stage.level}
-      </h1>
+      <h1 className="text-3xl text-center pt-16">Level {stage.level}</h1>
       <div className="text-2xl text-center text-orange-300 pt-4">{timer}</div>
       <div
         className="board-wrap text-center pt-4 text-center"

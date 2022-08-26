@@ -1,5 +1,5 @@
-export const boardWidth = window.innerWidth - 20;
-console.log(boardWidth);
+export const boardWidth =
+  window.innerWidth - 20 > 500 ? 500 : window.innerWidth - 20;
 export const totalSpan = 24;
 
 export let timer = 20;
