@@ -51,13 +51,13 @@ export const Result = () => {
   useEffect(() => {
     if (level >= 1 && level < 10) {
       setR(resultInfo[0]);
-    } else if (level >= 11 && level < 20) {
+    } else if (level >= 11 && level <= 20) {
       setR(resultInfo[1]);
-    } else if (level >= 21 && level < 30) {
+    } else if (level >= 21 && level <= 30) {
       setR(resultInfo[2]);
-    } else if (level >= 31 && level < 40) {
+    } else if (level >= 31 && level <= 40) {
       setR(resultInfo[3]);
-    } else if (level >= 41 && level < 50) {
+    } else if (level >= 41 && level <= 50) {
       setR(resultInfo[4]);
     } else if (level >= 51 && level < 60) {
       setR(resultInfo[5]);
